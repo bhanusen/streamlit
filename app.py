@@ -16,6 +16,13 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
+from PIL import Image
+import base64
+
+
+bhanu_image_base64 =  get_base64_image('bhanu.png')
+
+
 
 # ==============================
 # CLASS DEFINITION
@@ -169,7 +176,21 @@ if st.session_state.qa_chain:
             rag = MultiFormatRAG(groq_api_key)
             answer = rag.query(st.session_state.qa_chain, user_input)
 
-        st.markdown(f"**🧑 Bhanu:** {answer}")
+        st.markdown(
+            f"""
+                <div style="display:flex; align-items:center; margin-top:10x;">
+                    <img src="data:image/png;base64,{bhanu_image_base64}" width="40" height="40" style="border-radius":50%; margin-right:10px;">
+
+                     <div style="background-color:#f1f4f9, padding:10px 14px; max-width:80%;">
+                     <b>Bhanu:</b> {answer}
+                     </div>
+                </div>
+                """,
+                unsafe_allow_html=True    
+                    
+                    )
+
+
 
 else:
     st.info("👆 Upload documents and click **Process Documents** to start chatting.")
