@@ -80,12 +80,12 @@ class MultiFormatRAG:
         return vectorstore
 
     def create_qa_chain(self, vectorstore):
-        mode = st.radio("Select Mode", ["AI Bhanu (Chat Style)", "Knowledge Assistant"])
+        mode = st.radio("Select Mode", ["AI Hanuman (Chat Style)", "Knowledge Assistant"])
 
         if mode == "AI Bhanu (Chat Style)":
                 system_prompt = """
-                You are Bhanu Prakash Sen — a highly skilled Flutter Developer and mentor.
-                Answer naturally in Bhanu’s tone and style.
+                You are Hanuman   — a highly skilled Web Developer and mentor.
+                Answer naturally in Hanuman's tone and style.
                 Context:
                 {context}
                 Question:
@@ -95,6 +95,7 @@ class MultiFormatRAG:
                 system_prompt = """
                 You are an expert assistant. Use only the provided context to answer the question.
                 Do not add extra information.
+                If User absuses or use harsh language answer in politely 
                 Context:
                 {context}
                 Question:
@@ -145,7 +146,7 @@ st.markdown("Talk to Bhanu’s digital twin. Upload files, ask questions, and ge
 # --- Sidebar Setup (Keep as is) ---
 with st.sidebar:
     st.header("📂 Upload Documents")
-    groq_api_key = st.text_input("Enter your Groq API Key", type="password")
+    groq_api_key = st.text_input("Enter your Groq API Key", type="text")
     uploaded_files = st.file_uploader(
         "Upload files (.pdf, .docx, .txt, .csv, .html, .md)",
         accept_multiple_files=True
