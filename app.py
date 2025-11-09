@@ -70,7 +70,7 @@ class MultiFormatRAG:
     def create_qa_chain(self, vectorstore):
         mode = st.radio("Select Mode", ["AI Bhanu (Chat Style)", "Knowledge Assistant"])
 
-            if mode == "AI Bhanu (Chat Style)":
+        if mode == "AI Bhanu (Chat Style)":
                 system_prompt = """
                 You are Bhanu Prakash Sen — a highly skilled Flutter Developer and mentor.
                 Answer naturally in Bhanu’s tone and style.
@@ -79,7 +79,7 @@ class MultiFormatRAG:
                 Question:
                 {question}
                 """
-            else:
+        else:
                 system_prompt = """
                 You are an expert assistant. Use only the provided context to answer the question.
                 Do not add extra information.
