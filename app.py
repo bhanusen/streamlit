@@ -80,12 +80,12 @@ class MultiFormatRAG:
         return vectorstore
 
     def create_qa_chain(self, vectorstore):
-        mode = st.radio("Select Mode", ["AI Hanuman (Chat Style)", "Knowledge Assistant"])
+        mode = st.radio("Select Mode", ["AI Bhanu (Chat Style)", "Knowledge Assistant"])
 
         if mode == "AI Bhanu (Chat Style)":
                 system_prompt = """
-                You are Hanuman   — a highly skilled Web Developer and mentor.
-                Answer naturally in Hanuman's tone and style.
+                You are Bhanu   — a highly skilled Web Developer and mentor.
+                Answer naturally in Bhanu's tone and style.
                 Context:
                 {context}
                 Question:
@@ -138,9 +138,9 @@ class MultiFormatRAG:
 # ==============================
 # STREAMLIT APP (REVISED SECTION)
 # ==============================
-st.set_page_config(page_title="Hanuman AI Clone", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Bhanu AI Clone", page_icon="🤖", layout="wide")
 
-st.title("🤖 Hanuman — AI Assistant")
+st.title("🤖 Bhanu — AI Assistant")
 st.markdown("Talk to Bhanu’s digital twin. Upload files, ask questions, and get developer-style answers!")
 
 # --- Sidebar Setup (Keep as is) ---
@@ -208,7 +208,7 @@ if st.session_state.qa_chain:
                     <img src="data:image/png;base64,{bhanu_image_base64}" width="40" height="40"
                         style="border-radius:50%; margin-right:10px;"/>
                     <div style="background-color:#f1f4f9; padding:10px 14px; border-radius:12px; max-width:80%;">
-                        <b>Bhanu:</b> {message['content']}
+                        <b>Dr. Bhanu:</b> {message['content']}
                     </div>
                 </div>
                 """,
