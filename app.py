@@ -119,11 +119,15 @@ class MultiFormatRAG:
 # ==============================
 # STREAMLIT APP
 # ==============================
+# ==============================
+# STREAMLIT APP
+# ==============================
 st.set_page_config(page_title="Bhanu AI Clone", page_icon="🤖", layout="wide")
 
 st.title("🤖 Bhanu Prakash Sen — AI Assistant")
 st.markdown("Talk to Bhanu’s digital twin. Upload files, ask questions, and get developer-style answers!")
 
+# Sidebar: Upload + API key
 with st.sidebar:
     st.header("📂 Upload Documents")
     groq_api_key = st.text_input("Enter your Groq API Key", type="password")
@@ -133,9 +137,13 @@ with st.sidebar:
     )
     process_btn = st.button("🔍 Process Documents")
 
+# Initialize session state
 if "qa_chain" not in st.session_state:
     st.session_state.qa_chain = None
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
+# Document processing
 if process_btn:
     if not groq_api_key:
         st.error("Please enter your Groq API key.")
@@ -155,22 +163,33 @@ if process_btn:
                 qa_chain = rag.create_qa_chain(vectore_store)
 
                 st.session_state.qa_chain = qa_chain
+                st.session_state.chat_history = []  # reset history
 
-        st.success(" Documents processed successfully! You can now chat with Bhanu.")
+        st.success("✅ Documents processed successfully! You can now chat with Bhanu below.")
 
-# Chat Interface
+# Chat interface — only shown after documents processed
 if st.session_state.qa_chain:
     st.divider()
     st.subheader("💬 Chat with Bhanu")
 
-    user_input = st.text_input("Ask a question:")
+    user_input = st.text_input("Ask a question:", key="user_question")
+
     if user_input:
         with st.spinner("Thinking..."):
             rag = MultiFormatRAG(groq_api_key)
             answer = rag.query(st.session_state.qa_chain, user_input)
 
-        st.markdown(f"**🧑 Bhanu:** {answer}")
+        # Save to chat history
+        st.session_state.chat_history.append({"question": user_input, "answer": answer})
 
+        # Clear input field
+        st.session_state.user_question = ""
+
+    # Display chat history
+    if st.session_state.chat_history:
+        for chat in reversed(st.session_state.chat_history):
+            st.markdown(f"**🧑 You:** {chat['question']}")
+            st.markdown(f"**🤖 Bhanu:** {chat['answer']}")
+            st.markdown("---")
 else:
     st.info("👆 Upload documents and click **Process Documents** to start chatting.")
-
