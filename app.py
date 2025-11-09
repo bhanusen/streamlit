@@ -183,14 +183,15 @@ if process_btn:
         st.success(" Documents processed successfully! You can now chat with Bhanu.")
 
 # --- Chat Interface (REVISED) ---
+ # Chat Interface (CORRECTED STRUCTURE)
 if st.session_state.qa_chain:
     st.divider()
     st.subheader("💬 Chat with Bhanu")
 
-    # 1. Display Existing Chat History
+    # 1. Display Existing Chat History (This should run on every load/rerun)
     for message in st.session_state.chat_history:
         if message["role"] == "user":
-            # Display User Message
+            # Display User Message (Right aligned)
             st.markdown(f"""
                 <div style="display:flex; justify-content:flex-end; margin-top:10px;">
                     <div style="background-color:#007bff; color:white; padding:10px 14px; border-radius:12px; max-width:80%;">
@@ -199,7 +200,7 @@ if st.session_state.qa_chain:
                 </div>
             """, unsafe_allow_html=True)
         else:
-            # Display AI (Bhanu) Message
+            # Display AI (Bhanu) Message (Left aligned)
             st.markdown(
                 f"""
                 <div style="display:flex; align-items:center; margin-top:10px;">
@@ -213,88 +214,27 @@ if st.session_state.qa_chain:
                unsafe_allow_html=True
             )
 
+    # 2. Handle Input Capture (This call MUST be outside conditional logic that prevents reruns)
+    user_input = st.chat_input("Ask a question...") 
 
-    # 2. Handle New User Input
-    user_input = st.chat_input("Ask a question...") # Use st.chat_input for better chat feel
-
+    # 3. Process Input and Query LLM
     if user_input:
-        # Add user message to history immediately
+        # Add user message immediately
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         
-        # Rerun to display the user's message instantly
-        st.rerun() 
+        # Generate AI response in the same block (without immediate rerun)
+        with st.spinner("Thinking..."):
+            # NOTE: You need to ensure groq_api_key is accessible here, 
+            # which might require passing it or ensuring it's in os.environ beforehand.
+            # Since the key is set during the initial processing, we re-initialize RAG but use the stored chain.
+            rag = MultiFormatRAG(groq_api_key) # Re-instantiate RAG to access logger/config if needed
+            answer = rag.query(st.session_state.qa_chain, user_input)
 
-    # 3. Generate and Display AI Response (Only if history was updated by a new user input in this run)
-    # The logic below will only run if the app reruns *after* a user input was processed.
-    # Since the user input is handled by st.chat_input and causes a rerun, we need to check the last item.
-    if st.session_state.chat_history and st.session_state.chat_history[-1]["role"] == "user":
+        # Add AI response
+        st.session_state.chat_history.append({"role": "assistant", "content": answer})
         
-        # To avoid re-querying on every display, we can check if the last item is the user's last message
-        # and if we haven't already generated an AI response for it in a previous state.
-        # A simpler, robust method is to only generate if the user input triggered the rerun AND the last item is the user's.
-        # For simplicity, let's assume the rerun from st.chat_input is the trigger.
-        
-        last_message = st.session_state.chat_history[-1]
-        
-        # Check if the last message is the one we just added (user's message) and the AI hasn't responded yet.
-        # A better check would be to store a flag, but for now, we rely on the structure.
-        # Since we added the user message and reran, if the LLM hasn't run for this turn, we run it now.
-        
-        # To prevent the AI from answering on *every* render after history is loaded, 
-        # you should only trigger the query when a *new* user message is detected that doesn't have a corresponding AI reply.
-        
-        # For the first pass, let's simplify: We'll only trigger the AI query if the last entry is the user's, 
-        # and we'll use a temporary state to stop re-querying.
-        
-        # ***Self-Correction for Rerun Logic:***
-        # The simplest fix to avoid redundant queries on reruns is to only query *after* adding the user message 
-        # and then immediately check if an AI response exists for it in the history. If not, generate it.
-        
-        # Let's modify the structure to handle this:
-        
-        # **Remove the `if user_input:` block above and replace it with this structure:**
-        
-        # 1. Display History (as above)
-        # 2. Get Input via st.chat_input
-        # 3. If input exists:
-        #    a. Add user message.
-        #    b. Generate AI response.
-        #    c. Add AI response.
-        #    d. Rerun (or let the reruns naturally handle the display, but query must be inside the check).
-        
-        # Let's adopt the standard Streamlit chat flow:
-        
-        # --- REVISED REVISED CHAT INTERFACE ---
-        
-        # Re-display the history at the top (This is already done above)
-        
-        # Get Input
-        user_input = st.chat_input("Ask a question...")
-        
-        if user_input:
-            # Add user message to history and rerun
-            st.session_state.chat_history.append({"role": "user", "content": user_input})
-            st.rerun()
-            
-        # If the app executed a rerun because of user input, the last item is the user's message.
-        # We need to detect if the *last* message is a user message that hasn't been answered yet.
-        # Since we are running this block *after* the display loop, if the last item is the user's, we generate the response.
-        
-        if st.session_state.chat_history and st.session_state.chat_history[-1]["role"] == "user":
-            
-            # Extract the question from the latest (user) message
-            latest_question = st.session_state.chat_history[-1]["content"]
-            
-            with st.spinner("Thinking..."):
-                # Ensure you use the key stored in session state for the chain
-                rag = MultiFormatRAG(groq_api_key) 
-                answer = rag.query(st.session_state.qa_chain, latest_question)
-
-            # Add AI response to history
-            st.session_state.chat_history.append({"role": "assistant", "content": answer})
-            
-            # Rerun again to display the newly added assistant message alongside the user's message
-            st.rerun()
+        # Rerun the app so the newly added messages (user + assistant) are displayed immediately
+        st.rerun()
 
 else:
     st.info("👆 Upload documents and click **Process Documents** to start chatting.")
