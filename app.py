@@ -68,14 +68,27 @@ class MultiFormatRAG:
         return vectorstore
 
     def create_qa_chain(self, vectorstore):
-        system_prompt = """
-        You are Bhanu Prakash Sen — a highly skilled Flutter Developer, Software Engineer, and technology mentor.
-        ...
-        Context:
-        {context}
-        Question:
-        {question}
-        """
+        mode = st.radio("Select Mode", ["AI Bhanu (Chat Style)", "Knowledge Assistant"])
+
+            if mode == "AI Bhanu (Chat Style)":
+                system_prompt = """
+                You are Bhanu Prakash Sen — a highly skilled Flutter Developer and mentor.
+                Answer naturally in Bhanu’s tone and style.
+                Context:
+                {context}
+                Question:
+                {question}
+                """
+            else:
+                system_prompt = """
+                You are an expert assistant. Use only the provided context to answer the question.
+                Do not add extra information.
+                Context:
+                {context}
+                Question:
+                {question}
+                """
+
         prompt = PromptTemplate(
             input_variables=["context", "question"],
             template=system_prompt
