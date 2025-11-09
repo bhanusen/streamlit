@@ -20,6 +20,11 @@ from PIL import Image
 import base64
 
 
+def get_base64_image(image_path): 
+    """"Convert local image to base64 for inline HTML display."""
+    with open(image_path,"rb") as image_file: 
+        return base64.b64encode(image_file.read()).decode()
+
 bhanu_image_base64 =  get_base64_image('bhanu.png')
 
 
