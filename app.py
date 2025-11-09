@@ -156,7 +156,7 @@ if process_btn:
 
                 st.session_state.qa_chain = qa_chain
 
-        st.success("✅ Documents processed successfully! You can now chat with Bhanu.")
+        st.success(" Documents processed successfully! You can now chat with Bhanu.")
 
 # Chat Interface
 if st.session_state.qa_chain:
