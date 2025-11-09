@@ -183,17 +183,16 @@ if st.session_state.qa_chain:
 
         st.markdown(
             f"""
-                <div style="display:flex; align-items:center; margin-top:10px;">
-                    <img src="data:image/png;base64,{bhanu_image_base64}" width="40" height="40" style="border-radius:50%; margin-right:10px;">
-
-                     <div style="background-color:#f1f4f9; padding:10px 14px; max-width:80%;">
-                     <b>Bhanu:</b> {answer}
-                     </div>
+            <div style="display:flex; align-items:center; margin-top:10px;">
+                <img src="data:image/png;base64,{bhanu_image_base64}" width="40" height="40"
+                    style="border-radius:50%; margin-right:10px;"/>
+                <div style="background-color:#f1f4f9; padding:10px 14px; border-radius:12px; max-width:80%;">
+                    <b>Bhanu:</b> {answer}
                 </div>
-                """,
-                unsafe_allow_html=True    
-                    
-                    )
+            </div>
+            """,
+           unsafe_allow_html=True
+               )
 
 
 
