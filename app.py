@@ -172,30 +172,83 @@ if process_btn:
 
 # Chat Interface
 if st.session_state.qa_chain:
+   # ==============================
+# CHAT INTERFACE WITH HISTORY
+# ==============================
+ 
     st.divider()
     st.subheader("💬 Chat with Bhanu")
 
-    user_input = st.text_input("Ask a question:")
-    if user_input:
-        with st.spinner("Thinking..."):
-            rag = MultiFormatRAG(groq_api_key)
-            answer = rag.query(st.session_state.qa_chain, user_input)
+    # Initialize chat history if not already
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
 
-        st.markdown(
-            f"""
-            <div style="display:flex; align-items:center; margin-top:10px;">
-                <img src="data:image/png;base64,{bhanu_image_base64}" width="40" height="40"
-                    style="border-radius:50%; margin-right:10px;"/>
-                <div style="background-color:#f1f4f9; padding:10px 14px; border-radius:12px; max-width:80%;">
-                    <b>Bhanu:</b> {answer}
+    # Display all previous chat messages
+    for chat in st.session_state.chat_history:
+        if chat["role"] == "user":
+            st.markdown(
+                f"""
+                <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                    <div style="background-color:#DCF8C6; padding:10px 14px; border-radius:12px; max-width:80%; text-align:right;">
+                        <b>You:</b> {chat["content"]}
+                    </div>
                 </div>
-            </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        else:  # Bhanu's messages
+            st.markdown(
+                f"""
+                <div style="display:flex; align-items:center; margin-top:10px;">
+                    <img src="data:image/png;base64,{bhanu_image_base64}" width="40" height="40"
+                        style="border-radius:50%; margin-right:10px;"/>
+                    <div style="background-color:#f1f4f9; padding:10px 14px; border-radius:12px; max-width:80%;">
+                        <b>Bhanu:</b> {chat["content"]}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+    # Spacer to push input to bottom
+    st.markdown("<div style='height:50px;'></div>", unsafe_allow_html=True)
+
+    # Fixed chat input box at bottom
+    with st.container():
+        st.markdown(
+            """
+            <style>
+            .stTextInput {
+                position: fixed;
+                bottom: 15px;
+                left: 20%;
+                width: 60%;
+                z-index: 100;
+            }
+            </style>
             """,
-           unsafe_allow_html=True
-               )
+            unsafe_allow_html=True,
+        )
 
+        user_input = st.text_input("Ask a question:", key="user_input")
 
+        if user_input:
+            with st.spinner("Thinking..."):
+                rag = MultiFormatRAG(groq_api_key)
+                answer = rag.query(st.session_state.qa_chain, user_input)
+
+            # Save to history
+            st.session_state.chat_history.append({"role": "user", "content": user_input})
+            st.session_state.chat_history.append({"role": "bhanu", "content": answer})
+
+            # Clear text box for next input
+            st.session_state.user_input = ""
+
+            # Force rerun to show new messages
+            st.rerun()
 
 else:
     st.info("👆 Upload documents and click **Process Documents** to start chatting.")
 
+
+ 
