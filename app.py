@@ -138,15 +138,15 @@ class MultiFormatRAG:
 # ==============================
 # STREAMLIT APP (REVISED SECTION)
 # ==============================
-st.set_page_config(page_title="Bhanu AI Clone", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Hanuman AI Clone", page_icon="🤖", layout="wide")
 
-st.title("🤖 Bhanu Prakash Sen — AI Assistant")
+st.title("🤖 Hanuman — AI Assistant")
 st.markdown("Talk to Bhanu’s digital twin. Upload files, ask questions, and get developer-style answers!")
 
 # --- Sidebar Setup (Keep as is) ---
 with st.sidebar:
     st.header("📂 Upload Documents")
-    groq_api_key = st.text_input("Enter your Groq API Key", type="text")
+    groq_api_key = st.text_input("Enter your Groq API Key", type="password")
     uploaded_files = st.file_uploader(
         "Upload files (.pdf, .docx, .txt, .csv, .html, .md)",
         accept_multiple_files=True
