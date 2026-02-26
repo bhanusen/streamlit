@@ -1,2 +1,2 @@
 # streamlit
-An Ai Chat Bot
+An AI Chat Bot
